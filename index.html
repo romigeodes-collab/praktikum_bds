@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="id">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,33 +8,10 @@
 
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
-    <link rel="stylesheet" href="https://unpkg.com/@geoman-io/leaflet-geoman-free@latest/dist/leaflet-geoman.css" />
-    <script src="https://unpkg.com/@geoman-io/leaflet-geoman-free@latest/dist/leaflet-geoman.min.js"></script>
-    <script src="https://unpkg.com/shpjs@latest/dist/shp.js"></script>
 
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        html,
-        body {
-            height: 100%;
-            width: 100%;
-            overflow: hidden;
-        }
-
-        body {
-            font-family: 'Segoe UI', sans-serif;
-            background: #1a1a2e;
-            color: white;
-            display: flex;
-            flex-direction: column;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Segoe UI', sans-serif; background: #1a1a2e; color: white; }
 
         .header {
             height: 60px;
@@ -44,13 +20,9 @@
             align-items: center;
             justify-content: space-between;
             padding: 0 20px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
         }
-
-        .header h3 {
-            font-size: 18px;
-            font-weight: 600;
-        }
+        .header h3 { font-size: 18px; font-weight: 600; }
 
         .toolbar {
             display: flex;
@@ -60,22 +32,15 @@
             background: #16213e;
             border-bottom: 1px solid #0f3460;
             justify-content: space-between;
-            flex-wrap: wrap;
-            /* Izinkan turun ke bawah jika sempit */
+            flex-wrap: wrap; /* Izinkan turun ke bawah jika sempit */
         }
-
         .toolbar-group {
             display: flex;
             align-items: center;
             gap: 10px;
             flex-wrap: wrap;
         }
-
-        .toolbar label {
-            font-size: 14px;
-            color: #a0aec0;
-        }
-
+        .toolbar label { font-size: 14px; color: #a0aec0; }
         .toolbar select {
             padding: 6px 12px;
             border-radius: 6px;
@@ -85,187 +50,50 @@
             font-size: 14px;
             cursor: pointer;
         }
+        .toolbar select:focus { outline: none; border-color: #3498db; }
 
-        .toolbar select:focus {
-            outline: none;
-            border-color: #3498db;
-        }
-
-        .toolbar select:focus {
-            outline: none;
-            border-color: #3498db;
-        }
-
-        /* Struktur Sidebar & Map */
-        .main-wrapper {
-            display: flex;
-            flex: 1;
-            overflow: hidden;
-        }
-
-        .sidebar {
-            width: 320px;
-            background: #16213e;
-            border-right: 1px solid #0f3460;
-            overflow-y: auto;
-            padding: 15px;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            transition: all 0.3s ease;
-            /* Efek halus */
-        }
-
-        .sidebar.collapsed {
-            width: 0;
-            padding: 0;
-            margin: 0;
-            border: none;
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        .map-container {
-            flex: 1;
-            position: relative;
-        }
-
-        #map {
-            height: 100%;
-            width: 100%;
-        }
-
-        .sidebar-title {
-            font-size: 16px;
-            font-weight: bold;
-            color: #3498db;
-            border-bottom: 1px solid #0f3460;
-            padding-bottom: 8px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        /* Layer Card di Sidebar */
-        .layer-card {
-            background: #1a1a2e;
-            border: 1px solid #24344d;
-            border-radius: 8px;
-            padding: 12px;
-            transition: 0.3s;
-        }
-
-        .layer-card:hover {
-            border-color: #3498db;
-        }
-
-        .layer-card h4 {
-            font-size: 13px;
-            margin-bottom: 8px;
-            color: #ecf0f1;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .layer-card-actions {
-            display: flex;
-            gap: 5px;
-            flex-wrap: wrap;
-            margin-top: 8px;
-        }
-
-        .layer-card-actions button {
-            padding: 4px 8px;
-            font-size: 10px;
-            border-radius: 4px;
-            border: none;
-            cursor: pointer;
-            background: #0f3460;
-            color: white;
-        }
-
-        .layer-card-actions button:hover {
-            background: #3498db;
-        }
-
-        .layer-opacity {
-            width: 100%;
-            margin-top: 8px;
-            accent-color: #3498db;
-        }
+        #map { height: calc(100vh - 60px - 50px); width: 100%; }
 
         /* Legend */
         .legend {
             background: rgba(22, 33, 62, 0.95);
             padding: 12px 16px;
             border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.4);
             line-height: 1.8;
             color: white;
             font-size: 13px;
-            max-height: 300px;
-            /* Batasi tinggi maksimal */
-            overflow-y: auto;
-            /* Tambahkan scroll jika terlalu tinggi */
+            max-height: 300px; /* Batasi tinggi maksimal */
+            overflow-y: auto;  /* Tambahkan scroll jika terlalu tinggi */
         }
-
+        
         @media (max-width: 768px) {
             .legend {
-                max-height: 200px;
-                /* Lebih pendek lagi di HP */
+                max-height: 200px; /* Lebih pendek lagi di HP */
                 padding: 8px 10px;
                 font-size: 11px;
             }
         }
-
-        .legend h4 {
-            margin-bottom: 6px;
-            font-size: 14px;
-            color: #3498db;
-        }
-
-        .legend-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
-        }
-
-        .legend-item:hover {
-            opacity: 0.8;
-        }
-
+        .legend h4 { margin-bottom: 6px; font-size: 14px; color: #3498db; }
+        .legend-item { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+        .legend-item:hover { opacity: 0.8; }
         .legend-item input[type="checkbox"] {
-            width: 15px;
-            height: 15px;
-            cursor: pointer;
+            width: 15px; height: 15px; cursor: pointer;
         }
-
         .legend-color {
-            width: 20px;
-            height: 12px;
-            border-radius: 3px;
-            display: inline-block;
+            width: 20px; height: 12px; border-radius: 3px; display: inline-block;
         }
-
-        .legend-item.disabled {
-            opacity: 0.4;
-            text-decoration: line-through;
-        }
+        .legend-item.disabled { opacity: 0.4; text-decoration: line-through; }
 
         /* Modal Analisis */
         #modalAnalisis {
             display: none;
             position: fixed;
             z-index: 9999;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
+            left: 0; top: 0;
+            width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.7);
         }
-
         .modal-content {
             background-color: #1a1a2e;
             margin: 5% auto;
@@ -273,96 +101,38 @@
             border: 1px solid #3498db;
             width: 50%;
             border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
         }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid #3498db;
-            padding-bottom: 10px;
-        }
-
-        .close {
-            color: #aaa;
-            font-size: 28px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        .close:hover {
-            color: #fff;
-        }
-
-        #tableAnalisis {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-            color: white;
-        }
-
-        #tableAnalisis th,
-        #tableAnalisis td {
-            border: 1px solid #0f3460;
-            padding: 12px;
-            text-align: left;
-            min-width: 100px;
-        }
-
-        #tableAnalisis th {
-            background-color: #16213e;
-            color: #3498db;
-            white-space: nowrap;
-        }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #3498db; padding-bottom: 10px; }
+        .close { color: #aaa; font-size: 28px; font-weight: bold; cursor: pointer; }
+        .close:hover { color: #fff; }
+        
+        #tableAnalisis { width: 100%; border-collapse: collapse; margin-top: 20px; color: white; }
+        #tableAnalisis th, #tableAnalisis td { border: 1px solid #0f3460; padding: 12px; text-align: left; min-width: 100px; }
+        #tableAnalisis th { background-color: #16213e; color: #3498db; white-space: nowrap; }
 
         /* Media Query untuk HP */
         @media (max-width: 768px) {
-            .header h3 {
-                font-size: 14px;
-            }
-
-            .toolbar {
-                padding: 5px 10px;
-                gap: 5px;
-            }
-
-            .toolbar label {
-                font-size: 12px;
-            }
-
-            .toolbar select,
-            .toolbar button {
-                font-size: 12px;
-                padding: 4px 8px;
-            }
-
+            .header h3 { font-size: 14px; }
+            .toolbar { padding: 5px 10px; gap: 5px; }
+            .toolbar label { font-size: 12px; }
+            .toolbar select, .toolbar button { font-size: 12px; padding: 4px 8px; }
+            
             .modal-content {
                 width: 95%;
                 margin: 20% auto;
                 padding: 10px;
             }
-
-            #map {
-                height: calc(100vh - 120px);
-            }
-
-            /* Sesuaikan tinggi karena toolbar mungkin melebar */
-
+            
+            #map { height: calc(100vh - 120px); } /* Sesuaikan tinggi karena toolbar mungkin melebar */
+            
             .table-container {
-                overflow-x: auto;
-                /* Agar tabel bisa digeser kiri-kanan di HP */
+                overflow-x: auto; /* Agar tabel bisa digeser kiri-kanan di HP */
                 display: block;
             }
         }
-
-        #tableAnalisis tr:nth-child(even) {
-            background-color: #16213e;
-        }
-
-        #tableAnalisis tr:hover {
-            background-color: #0f3460;
-        }
+        #tableAnalisis tr:nth-child(even) { background-color: #16213e; }
+        #tableAnalisis tr:hover { background-color: #0f3460; }
 
         /* Gaya untuk Titik Lokasi GPS */
         .gps-location-dot {
@@ -371,50 +141,22 @@
             border-radius: 50%;
             box-shadow: 0 0 10px rgba(52, 152, 219, 0.8);
         }
-
         .gps-pulse {
             position: absolute;
-            width: 100%;
-            height: 100%;
+            width: 100%; height: 100%;
             border-radius: 50%;
             background: rgba(52, 152, 219, 0.4);
             animation: pulse-gps 2s infinite;
         }
-
         @keyframes pulse-gps {
-            0% {
-                transform: scale(1);
-                opacity: 1;
-            }
-
-            100% {
-                transform: scale(3);
-                opacity: 0;
-            }
+            0% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(3); opacity: 0; }
         }
 
         /* SQL Result Table Layout Fix */
-        #tableQuery {
-            table-layout: auto;
-        }
-
-        #tableQuery th {
-            padding: 10px;
-            border: 1px solid #3498db;
-            background: #16213e;
-            color: #3498db;
-            text-align: left;
-            white-space: nowrap;
-        }
-
-        #tableQuery td {
-            padding: 10px;
-            border: 1px solid #0f3460;
-            max-width: 200px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
+        #tableQuery { table-layout: auto; }
+        #tableQuery th { padding: 10px; border: 1px solid #3498db; background: #16213e; color: #3498db; text-align: left; white-space: nowrap; }
+        #tableQuery td { padding: 10px; border: 1px solid #0f3460; max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
         /* Icon Peta di Tabel */
         .btn-view-geom {
@@ -427,10 +169,7 @@
             font-size: 14px;
             margin-right: 5px;
         }
-
-        .btn-view-geom:hover {
-            background: #2ecc71;
-        }
+        .btn-view-geom:hover { background: #2ecc71; }
 
         /* SQL Console Specific */
         #sqlEditor {
@@ -445,28 +184,12 @@
             margin-bottom: 10px;
             resize: vertical;
         }
-
-        .sql-templates {
-            margin-bottom: 15px;
-            display: flex;
-            gap: 5px;
-            flex-wrap: wrap;
+        .sql-templates { margin-bottom: 15px; display: flex; gap: 5px; flex-wrap: wrap; }
+        .sql-templates button { 
+            background: #16213e; color: #a0aec0; border: 1px solid #0f3460; 
+            padding: 4px 8px; font-size: 11px; cursor: pointer; border-radius: 4px;
         }
-
-        .sql-templates button {
-            background: #16213e;
-            color: #a0aec0;
-            border: 1px solid #0f3460;
-            padding: 4px 8px;
-            font-size: 11px;
-            cursor: pointer;
-            border-radius: 4px;
-        }
-
-        .sql-templates button:hover {
-            background: #3498db;
-            color: white;
-        }
+        .sql-templates button:hover { background: #3498db; color: white; }
 
         /* Coordinate Display */
         .mouse-coordinates {
@@ -477,1547 +200,632 @@
             font-family: monospace;
             font-size: 12px;
             border: 1px solid #0f3460;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
             margin-bottom: 10px;
             margin-left: 10px;
         }
-
-        /* Label SHP */
-        .shp-label {
-            background: transparent !important;
-            border: none !important;
-            box-shadow: none !important;
-            color: white !important;
-            font-weight: bold;
-            text-shadow: 1px 1px 2px black, -1px -1px 2px black;
-            font-size: 11px;
-            pointer-events: none;
-        }
     </style>
 </head>
-
 <body>
-    <!-- Modal Input Atribut Baru (Diletakkan di Luar agar selalu di atas) -->
-    <div id="modalFeature"
-        style="display: none; position: fixed; z-index: 999999; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(6px);">
-        <div
-            style="background: #1a1a2e; width: 420px; margin: 5% auto; padding: 30px; border-radius: 20px; border: 2px solid #3498db; box-shadow: 0 0 30px rgba(52, 152, 219, 0.6); color: white;">
-            <h3 id="modalTitle"
-                style="margin-top: 0; margin-bottom: 20px; color: #3498db; border-bottom: 2px solid #0f3460; padding-bottom: 15px; font-size: 20px;">
-                📝 Input Data Baru</h3>
-            <form id="featureForm" style="display: flex; flex-direction: column; gap: 18px;">
-                <div id="formFields" style="max-height: 400px; overflow-y: auto; padding-right: 10px;">
-                    <!-- Input dinamis -->
-                </div>
-                <div style="display: flex; gap: 12px; margin-top: 10px;">
-                    <button type="submit"
-                        style="flex: 2; padding: 14px; background: #2ecc71; color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; transition: 0.3s;">SIMPAN
-                        DATA 💾</button>
-                    <button type="button" id="cancelFeature"
-                        style="flex: 1; padding: 14px; background: #e74c3c; color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; transition: 0.3s;">BATAL</button>
-                </div>
-            </form>
+
+<div class="header">
+    <h3>🗺️ Praktikum Basis Data Spasial: Web GIS-Multi Layer Editor - S1 Teknik Geodesi-UNILA - Dosen PMK: Romi Fadly, S.T., M.Eng.</h3>
+</div>
+
+<div class="toolbar">
+    <div class="toolbar-group">
+        <label for="layerSelect" style="color: #3498db; font-weight: bold;">Simpan ke tabel:</label>
+        <select id="layerSelect">
+            <option value="jalan">🛣️ Jalan</option>
+            <option value="landuse">🏞️ Landuse</option>
+            <option value="tower">📡 Tower</option>
+            <option value="wilayah">🏘️ Wilayah</option>
+        </select>
+
+        <button id="btnQuery" style="margin-left: 5px; padding: 6px 12px; background: #3498db; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: bold; transition: 0.3s;">🔍 Query SQL</button>
+        <button id="btnGPS" style="margin-left: 5px; padding: 6px 12px; background: #e67e22; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: bold; transition: 0.3s;">📍 Lokasi Saya: OFF</button>
+    </div>
+    <div class="toolbar-group">
+        <label for="basemapSelect" style="color: #3498db; font-weight: bold;">🌍 Base Map:</label>
+        <select id="basemapSelect">
+            <option value="osm">OpenStreetMap</option>
+            <option value="satellite">Satelit (Esri)</option>
+            <option value="google">Satelit (Google Hybrid)</option>
+        </select>
+    </div>
+</div>
+
+<div id="map"></div>
+
+
+
+<!-- Modal Query SQL -->
+<div id="modalQuery" style="display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7);">
+    <div class="modal-content" style="width: 70%; margin: 2% auto;">
+        <div class="modal-header">
+            <h2 style="color: #3498db;">🔍 SQL Console (PostGIS)</h2>
+            <span class="closeQuery" style="color: #aaa; font-size: 28px; font-weight: bold; cursor: pointer;">&times;</span>
+        </div>
+        
+        <div style="margin-top: 15px;">
+            <p style="font-size: 12px; color: #a0aec0; margin-bottom: 5px;">Ketik query SQL Anda di sini:</p>
+            <div class="sql-templates">
+                <button onclick="setSql('SELECT id_jalan, nama_jalan, kondisi, jl_geom FROM jalan LIMIT 10')">List Jalan (Spasial)</button>
+                <button onclick="setSql('SELECT kabupaten, wilayah_geom FROM wilayah')">Spasial Wilayah</button>
+                <button onclick="setSql('SELECT id_tower, pt_pembuat, tower_geom FROM tower LIMIT 5')">Spasial Tower</button>
+                <button onclick="setSql('SELECT id_landuse, penggunaan, luas, landuse_geom FROM landuse')">List Landuse (Spasial)</button>
+                <button onclick="setSql('SELECT w.kabupaten, ROUND((SUM(ST_Length(j.jl_geom::geography))/1000)::numeric, 2) as panjang_km FROM wilayah w JOIN jalan j ON ST_Intersects(w.wilayah_geom, j.jl_geom) GROUP BY w.kabupaten ORDER BY panjang_km DESC')" style="background:#e67e22;">📊 Analisis Panjang Jalan</button>
+            </div>
+            <textarea id="sqlEditor" placeholder="SELECT ... FROM ..."></textarea>
+            <div style="display: flex; gap: 10px; margin-top: 5px;">
+                <button id="runQuery" style="flex: 3; padding: 10px; background: #2ecc71; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">RUN QUERY ⚡</button>
+                <button id="resetQuery" style="flex: 1; padding: 10px; background: #e74c3c; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">RESET 🧹</button>
+            </div>
+
+        <div id="queryResultContainer" style="max-height: 300px; overflow-y: auto; margin-top: 20px;">
+            <table id="tableQuery" style="width: 100%; border-collapse: collapse; color: white; font-size: 12px;">
+                <thead id="headQuery"></thead>
+                <tbody id="bodyQuery"></tbody>
+            </table>
         </div>
     </div>
+</div>
 
-    <div class="header">
-        <h3>🗺️ Praktikum Basis Data Spasial: Web GIS-Multi Layer Editor - S1 Teknik Geodesi-UNILA - Dosen PMK: Romi
-            Fadly, S.T., M.Eng.</h3>
-    </div>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js"></script>
 
-    <div class="toolbar">
-        <div class="toolbar-group">
-            <button id="toggleSidebar"
-                style="background: #0f3460; border: 1px solid #3498db; color: #3498db; padding: 6px 10px; border-radius: 5px; cursor: pointer; font-weight: bold; margin-right: 10px;"
-                title="Sembunyikan/Munculkan Sidebar">☰</button>
-            <label for="layerSelect" style="color: #3498db; font-weight: bold;">Simpan ke tabel:</label>
-            <select id="layerSelect">
-                <option value="jalan">🛣️ Jalan</option>
-                <option value="landuse">🏞️ Landuse</option>
-                <option value="tower">📡 Tower</option>
-                <option value="wilayah">🏘️ Wilayah</option>
-            </select>
-
-            <button id="btnQuery"
-                style="margin-left: 5px; padding: 6px 12px; background: #3498db; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: bold; transition: 0.3s;">🔍
-                Query SQL</button>
-            <button id="btnGPS"
-                style="margin-left: 5px; padding: 6px 12px; background: #e67e22; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: bold; transition: 0.3s;">📍
-                Lokasi Saya: OFF</button>
-            <button id="btnUploadCitra"
-                style="margin-left: 5px; padding: 6px 12px; background: #9b59b6; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: bold; transition: 0.3s;">🛰️
-                Upload Citra</button>
-            <button id="btnUploadSHP"
-                style="margin-left: 5px; padding: 6px 12px; background: #34495e; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: bold; transition: 0.3s;">📂
-                Upload SHP (.zip)</button>
-        </div>
-        <div class="toolbar-group">
-            <label for="basemapSelect" style="color: #3498db; font-weight: bold;">🌍 Base Map:</label>
-            <select id="basemapSelect">
-                <option value="osm">OpenStreetMap</option>
-                <option value="satellite">Satelit (Esri)</option>
-                <option value="google">Satelit (Google Hybrid)</option>
-            </select>
-        </div>
-    </div>
-
-    <div class="main-wrapper">
-        <div class="sidebar" id="layerSidebar">
-            <div class="sidebar-title">📑 Table of Contents</div>
-            <div id="layerList" style="display: flex; flex-direction: column; gap: 10px;">
-                <p style="font-size: 12px; color: #a0aec0; text-align: center; margin-top: 20px;">Belum ada data yang
-                    diupload.</p>
-            </div>
-        </div>
-        <div class="map-container">
-            <div id="map"></div>
-        </div>
-    </div>
-
-
-
-    <!-- Modal Query SQL -->
-    <div id="modalQuery"
-        style="display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7);">
-        <div class="modal-content" style="width: 70%; margin: 2% auto;">
-            <div class="modal-header">
-                <h2 style="color: #3498db;">🔍 SQL Console (PostGIS)</h2>
-                <span class="closeQuery"
-                    style="color: #aaa; font-size: 28px; font-weight: bold; cursor: pointer;">&times;</span>
-            </div>
-
-            <div style="margin-top: 15px;">
-                <p style="font-size: 12px; color: #a0aec0; margin-bottom: 5px;">Ketik query SQL Anda di sini:</p>
-                <div class="sql-templates">
-                    <button onclick="setSql('SELECT id_jalan, nama_jalan, kondisi, jl_geom FROM jalan LIMIT 10')">List
-                        Jalan (Spasial)</button>
-                    <button onclick="setSql('SELECT kabupaten, wilayah_geom FROM wilayah')">Spasial Wilayah</button>
-                    <button onclick="setSql('SELECT id_tower, pt_pembuat, tower_geom FROM tower LIMIT 5')">Spasial
-                        Tower</button>
-                    <button onclick="setSql('SELECT id_landuse, penggunaan, luas, landuse_geom FROM landuse')">List
-                        Landuse (Spasial)</button>
-                    <button
-                        onclick="setSql('SELECT w.kabupaten, ROUND((SUM(ST_Length(j.jl_geom::geography))/1000)::numeric, 2) as panjang_km FROM wilayah w JOIN jalan j ON ST_Intersects(w.wilayah_geom, j.jl_geom) GROUP BY w.kabupaten ORDER BY panjang_km DESC')"
-                        style="background:#e67e22;">📊 Analisis Panjang Jalan</button>
-                </div>
-                <textarea id="sqlEditor" placeholder="SELECT ... FROM ..."></textarea>
-                <div style="display: flex; gap: 10px; margin-top: 5px;">
-                    <button id="runQuery"
-                        style="flex: 3; padding: 10px; background: #2ecc71; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">RUN
-                        QUERY ⚡</button>
-                    <button id="resetQuery"
-                        style="flex: 1; padding: 10px; background: #e74c3c; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold;">RESET
-                        🧹</button>
-                </div>
-                <div id="queryResultContainer" style="max-height: 300px; overflow-y: auto; margin-top: 20px;">
-                    <table id="tableQuery"
-                        style="width: 100%; border-collapse: collapse; color: white; font-size: 12px;">
-                        <thead id="headQuery"></thead>
-                        <tbody id="bodyQuery"></tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
-
-
-    <!-- Modal Upload Citra -->
-    <div id="modalUpload"
-        style="display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7);">
-        <div class="modal-content"
-            style="width: 400px; margin: 10% auto; background: #1a1a2e; color: white; padding: 20px; border-radius: 10px; border: 1px solid #9b59b6;">
-            <div class="modal-header"
-                style="border-bottom: 1px solid #9b59b6; padding-bottom: 10px; margin-bottom: 20px;">
-                <h2 style="color: #9b59b6; font-size: 18px;">🛰️ Upload Citra & Georeference</h2>
-                <span class="closeUpload"
-                    style="color: #aaa; font-size: 28px; font-weight: bold; cursor: pointer;">&times;</span>
-            </div>
-
-            <div style="display: flex; flex-direction: column; gap: 15px;">
-                <div>
-                    <label style="display: block; font-size: 12px; color: #a0aec0; margin-bottom: 5px;">1. Pilih File
-                        Gambar (JPG / PNG):</label>
-                    <input type="file" id="inputImage" accept="image/jpeg, image/png"
-                        style="width: 100%; font-size: 12px;">
-                </div>
-                <div>
-                    <label style="display: block; font-size: 12px; color: #a0aec0; margin-bottom: 5px;">2. Pilih World
-                        File (JGW / PGW):</label>
-                    <input type="file" id="inputWorld" accept=".jgw, .pgw" style="width: 100%; font-size: 12px;">
-                </div>
-
-                <p
-                    style="font-size: 11px; color: #e74c3c; background: rgba(231, 76, 60, 0.1); padding: 8px; border-radius: 5px;">
-                    *Pastikan kedua file memiliki koordinat dalam sistem WGS84 (Lat/Long).
-                </p>
-
-                <button id="processUpload"
-                    style="padding: 12px; background: #9b59b6; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; margin-top: 10px;">PROSES
-                    & TAMPILKAN 🚀</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal Simbologi SHP -->
-    <div id="modalSymbology"
-        style="display: none; position: fixed; z-index: 10000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8);">
-        <div class="modal-content"
-            style="width: 350px; margin: 10% auto; background: #1a1a2e; color: white; padding: 20px; border-radius: 10px; border: 1px solid #f1c40f;">
-            <div class="modal-header"
-                style="border-bottom: 1px solid #f1c40f; padding-bottom: 10px; margin-bottom: 20px;">
-                <h2 style="color: #f1c40f; font-size: 16px;">🎨 Pengaturan Simbologi</h2>
-                <span class="closeSym"
-                    style="color: #aaa; font-size: 28px; font-weight: bold; cursor: pointer;">&times;</span>
-            </div>
-            <div>
-                <label style="display: block; font-size: 12px; color: #a0aec0; margin-bottom: 8px;">1. Pilih Kolom untuk
-                    Pewarnaan (Categorized):</label>
-                <select id="selectField"
-                    style="width: 100%; padding: 8px; background: #0f3460; color: white; border: 1px solid #3498db; border-radius: 5px; margin-bottom: 15px;">
-                    <option value="">-- Tanpa Kolom (Warna Tunggal) --</option>
-                </select>
-
-                <label style="display: block; font-size: 12px; color: #a0aec0; margin-bottom: 8px;">2. Warna Garis
-                    OutLine:</label>
-                <input type="color" id="lineColor" value="#ffffff"
-                    style="width: 100%; height: 35px; border: none; background: none; cursor: pointer; margin-bottom: 15px;">
-
-                <label style="display: block; font-size: 12px; color: #a0aec0; margin-bottom: 8px;">3. Jenis
-                    Garis:</label>
-                <select id="lineStyle"
-                    style="width: 100%; padding: 8px; background: #0f3460; color: white; border: 1px solid #3498db; border-radius: 5px; margin-bottom: 15px;">
-                    <option value="">Solid (Lurus)</option>
-                    <option value="10, 10">Dashed (Putus-putus)</option>
-                    <option value="1, 10">Dotted (Titik-titik)</option>
-                    <option value="20, 10, 5, 10">Dash-Dot (Putus Titik)</option>
-                </select>
-
-                <div style="border-top: 1px solid #34495e; padding-top: 15px; margin-top: 15px;">
-                    <label
-                        style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: #f1c40f; cursor: pointer; margin-bottom: 10px;">
-                        <input type="checkbox" id="checkLabel" style="width: 18px; height: 18px;"> 🏷️ Tampilkan Label
-                    </label>
-
-                    <label style="display: block; font-size: 12px; color: #a0aec0; margin-bottom: 8px;">Pilih Kolom
-                        Label:</label>
-                    <select id="selectLabelField"
-                        style="width: 100%; padding: 8px; background: #0f3460; color: white; border: 1px solid #3498db; border-radius: 5px;"></select>
-                </div>
-
-                <button id="applySymbology"
-                    style="width: 100%; padding: 12px; background: #f1c40f; color: #1a1a2e; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; margin-top: 10px;">TERAPKAN
-                    GAYA 🎨✨</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal Upload SHP -->
-    <div id="modalSHP"
-        style="display: none; position: fixed; z-index: 9999; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7);">
-        <div class="modal-content"
-            style="width: 400px; margin: 10% auto; background: #1a1a2e; color: white; padding: 20px; border-radius: 10px; border: 1px solid #34495e;">
-            <div class="modal-header"
-                style="border-bottom: 1px solid #34495e; padding-bottom: 10px; margin-bottom: 20px;">
-                <h2 style="color: #ecf0f1; font-size: 18px;">📂 Upload Shapefile (ZIP)</h2>
-                <span class="closeSHP"
-                    style="color: #aaa; font-size: 28px; font-weight: bold; cursor: pointer;">&times;</span>
-            </div>
-
-            <div style="display: flex; flex-direction: column; gap: 15px;">
-                <div>
-                    <label style="display: block; font-size: 12px; color: #a0aec0; margin-bottom: 5px;">Pilih Folder
-                        (Aplikasi akan mencari .shp & .dbf otomatis):</label>
-                    <input type="file" id="inputSHP" webkitdirectory directory style="width: 100%; font-size: 12px;">
-                </div>
-
-                <p
-                    style="font-size: 11px; color: #3498db; background: rgba(52, 152, 219, 0.1); padding: 8px; border-radius: 5px;">
-                    *Pastikan file SHP berada di dalam satu ZIP dan menggunakan sistem koordinat WGS84 (EPSG:4326).
-                </p>
-
-                <button id="processSHP"
-                    style="padding: 12px; background: #34495e; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; margin-top: 10px;">TAMPILKAN
-                    SHP 🚀</button>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        // DETEKTOR ERROR (Hapus jika sudah lancar)
-        window.onerror = function (msg, url, line) {
-            alert("🚨 Ada Error: " + msg + "\nBaris: " + line);
-            return false;
-        };
-
-        // ============================================================
-        // INISIALISASI PETA
-        // ============================================================
-        var map = L.map('map', {
-            minZoom: 3,
-            maxZoom: 25
+<script>
+    // ============================================================
+    // INISIALISASI PETA
+    // ============================================================
+    var map = L.map('map', {
+        minZoom: 3,
+        maxZoom: 25  // Izinkan zoom sampai level 22
         }).setView([-4.7000, 105.2166], 9);
 
-        // Pastikan peta menyesuaikan ukuran saat pertama kali dimuat
-        setTimeout(function () { map.invalidateSize(); }, 500);
+    // ============================================================
+    // BASEMAP LAYERS
+    // ============================================================
+    var basemaps = {
+        osm: L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors',
+            maxNativeZoom: 19,
+            maxZoom: 22
+        }),
+        satellite: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+            attribution: '&copy; Esri',
+            maxNativeZoom: 18,
+            maxZoom: 22
+        }),
+        google: L.tileLayer('https://{s}.google.com/vt/lyrs=y&x={x}&y={y}&z={z}', {
+            attribution: '&copy; Google Maps',
+            subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
+            maxNativeZoom: 20,
+            maxZoom: 25
+        })
+    };
 
-        // ============================================================
-        // FITUR SNAPPING (MAGNET) PRO - GEOMAN INTEGRATION
-        // ============================================================
-        if (map.pm) {
-            map.pm.setGlobalOptions({
-                snappable: true,
-                snapDistance: 25,
-                allowSelfIntersection: false
-            });
+    // Default: OpenStreetMap
+    basemaps.osm.addTo(map);
+
+    // Switch basemap saat dropdown berubah
+    document.getElementById('basemapSelect').addEventListener('change', function () {
+        var selected = this.value;
+        for (var key in basemaps) {
+            map.removeLayer(basemaps[key]);
         }
+        basemaps[selected].addTo(map);
+    });
 
-        // ============================================================
-        // BASEMAP LAYERS
-        // ============================================================
-        var basemaps = {
-            osm: L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '&copy; OpenStreetMap contributors',
-                maxNativeZoom: 19,
-                maxZoom: 22
-            }),
-            satellite: L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-                attribution: '&copy; Esri',
-                maxNativeZoom: 18,
-                maxZoom: 22
-            }),
-            google: L.tileLayer('https://{s}.google.com/vt/lyrs=y&x={x}&y={y}&z={z}', {
-                attribution: '&copy; Google Maps',
-                subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
-                maxNativeZoom: 20,
-                maxZoom: 25
+    var drawnItems = new L.FeatureGroup();
+    map.addLayer(drawnItems);
+
+    // Grup layer khusus untuk menampung hasil query SQL spasial
+    var queryResultLayer = L.featureGroup().addTo(map);
+
+    // ============================================================
+    // WARNA PER LAYER
+    // ============================================================
+    var layerColors = {
+        jalan:   '#e74c3c',
+        landuse: '#2ecc71',
+        tower:   '#f39c12',
+        wilayah: '#3498db'
+    };
+
+    // ============================================================
+    // LOAD DATA DARI SEMUA TABEL SPASIAL
+    // ============================================================
+    var layerGroups = {};
+
+    function popupContent(props) {
+        var html = '<table style="font-size:12px; border-collapse:collapse;">';
+        for (var key in props) {
+            html += '<tr><td style="padding:2px 8px; font-weight:bold; color:#2c3e50;">' + key + '</td>'
+                  + '<td style="padding:2px 8px;">' + (props[key] !== null ? props[key] : '-') + '</td></tr>';
+        }
+        html += '</table>';
+        return html;
+    }
+
+    function loadLayer(name, color) {
+        fetch('/api/' + name)
+            .then(res => res.json())
+            .then(geojsonData => {
+                if (layerGroups[name]) {
+                    map.removeLayer(layerGroups[name]);
+                }
+                layerGroups[name] = L.geoJSON(geojsonData, {
+                    style: function () {
+                        return { color: color, weight: 3, opacity: 0.8, fillColor: color, fillOpacity: 0.25 };
+                    },
+                    pointToLayer: function (feature, latlng) {
+                        return L.circleMarker(latlng, {
+                            radius: 7, fillColor: color, color: '#fff',
+                            weight: 2, opacity: 1, fillOpacity: 0.9
+                        });
+                    },
+                    onEachFeature: function (feature, layer) {
+                        // Simpan info tabel dan ID di layer agar bisa di-edit/hapus
+                        var idField = 'id_' + name;
+                        layer.featureId = feature.properties[idField];
+                        layer.tableName = name;
+
+                        layer.bindPopup('<b style="color:' + color + ';">[' + name.toUpperCase() + ']</b><br>' + popupContent(feature.properties));
+                        
+                        // Penting: tambahkan ke drawnItems agar bisa di-edit/hapus oleh toolbar
+                        drawnItems.addLayer(layer);
+                    }
+                });
             })
-        };
+            .catch(err => console.error('Gagal load ' + name + ':', err));
+    }
 
-        // Default: OpenStreetMap
-        basemaps.osm.addTo(map);
+    function loadAllLayers() {
+        // Bersihkan drawnItems sebelum reload
+        drawnItems.clearLayers();
+        for (var name in layerColors) {
+            loadLayer(name, layerColors[name]);
+        }
+    }
 
-        // Switch basemap saat dropdown berubah
-        document.getElementById('basemapSelect').addEventListener('change', function () {
-            var selected = this.value;
-            for (var key in basemaps) {
-                map.removeLayer(basemaps[key]);
-            }
-            basemaps[selected].addTo(map);
-        });
+    loadAllLayers();
 
-        var drawnItems = new L.FeatureGroup();
-        map.addLayer(drawnItems);
-
-        // Grup layer khusus untuk menampung hasil query SQL spasial
-        var queryResultLayer = L.featureGroup().addTo(map);
-
-        // ============================================================
-        // PENGATURAN CITRA FOTO (OVERLAY)
-        // Silakan isi koordinatnya di sini
-        // ============================================================
-        var myImage = 'assets/nama_foto_bapak.png';
-        var bounds = [[-5.402, 105.240], [-5.395, 105.250]];
-        var orthophoto = L.imageOverlay(myImage, bounds, { opacity: 0.8, interactive: true });
-
-        // Tambahkan kontrol untuk menyalakan/mematikan layer citra di pojok kanan
-        var overlays = {
-            "🛰️ Citra Default": orthophoto
-        };
-        var layerControl = L.control.layers(null, overlays, { position: 'topright' }).addTo(map);
-
-        // ============================================================
-        // WARNA PER LAYER
-        // ============================================================
-        var layerColors = {
-            jalan: '#e74c3c',
-            landuse: '#2ecc71',
-            tower: '#f39c12',
-            wilayah: '#3498db'
-        };
-
-        // ============================================================
-        // LOAD DATA DARI SEMUA TABEL SPASIAL
-        // ============================================================
-        var layerGroups = {};
-
-        function popupContent(props) {
-            var html = '<table style="font-size:12px; border-collapse:collapse;">';
-            for (var key in props) {
-                html += '<tr><td style="padding:2px 8px; font-weight:bold; color:#2c3e50;">' + key + '</td>'
-                    + '<td style="padding:2px 8px;">' + (props[key] !== null ? props[key] : '-') + '</td></tr>';
-            }
-            html += '</table>';
-            return html;
+    // ============================================================
+    // LEGEND + CHECKBOX TOGGLE
+    // ============================================================
+    var legend = L.control({ position: 'bottomright' });
+    legend.onAdd = function () {
+        var div = L.DomUtil.create('div', 'legend');
+        div.innerHTML = '<h4>Layer</h4>';
+        var labels = { jalan: '🛣️ Jalan', landuse: '🏞️ Landuse', tower: '📡 Tower', wilayah: '🏘️ Wilayah' };
+        for (var key in layerColors) {
+            div.innerHTML += '<div class="legend-item" id="legend-' + key + '">'
+                + '<input type="checkbox" id="cb-' + key + '" checked '
+                + 'style="accent-color:' + layerColors[key] + ';" />'
+                + '<span class="legend-color" style="background:' + layerColors[key] + ';"></span>'
+                + '<label for="cb-' + key + '">' + labels[key] + '</label>'
+                + '</div>';
         }
 
-        function loadLayer(name, color) {
-            fetch('/api/' + name)
-                .then(res => res.json())
-                .then(geojsonData => {
-                    if (layerGroups[name]) {
-                        map.removeLayer(layerGroups[name]);
-                    }
-                    layerGroups[name] = L.geoJSON(geojsonData, {
-                        style: function () {
-                            return { color: color, weight: 3, opacity: 0.8, fillColor: color, fillOpacity: 0.25 };
-                        },
-                        pointToLayer: function (feature, latlng) {
-                            if (name === 'tower') {
-                                return L.marker(latlng, {
-                                    icon: L.divIcon({
-                                        className: 'tower-icon',
-                                        html: '<div style="background-color:orange; width:12px; height:12px; border:2px solid white; border-radius:50%; box-shadow:0 0 5px rgba(0,0,0,0.5);"></div>',
-                                        iconSize: [12, 12],
-                                        iconAnchor: [6, 6]
-                                    })
-                                });
+        // Prevent map drag saat klik di legend
+        L.DomEvent.disableClickPropagation(div);
+        return div;
+    };
+    legend.addTo(map);
+
+    // Event: toggle layer on/off
+    function setupCheckboxes() {
+        for (var key in layerColors) {
+            (function(layerName) {
+                var cb = document.getElementById('cb-' + layerName);
+                var legendItem = document.getElementById('legend-' + layerName);
+                if (cb) {
+                    cb.addEventListener('change', function () {
+                        var isChecked = this.checked;
+                        
+                        // Cari semua fitur di drawnItems yang punya tableName sama
+                        drawnItems.eachLayer(function(layer) {
+                            if (layer.tableName === layerName) {
+                                if (isChecked) {
+                                    map.addLayer(layer);
+                                } else {
+                                    map.removeLayer(layer);
+                                }
                             }
-                            return L.circleMarker(latlng, {
-                                radius: 7, fillColor: color, color: '#fff',
-                                weight: 2, opacity: 1, fillOpacity: 0.9
-                            });
-                        },
-                        onEachFeature: function (feature, layer) {
-                            if (!feature || !feature.properties) return;
+                        });
 
-                            var idField = 'id_' + name;
-                            layer.featureId = feature.properties[idField];
-                            layer.tableName = name;
-
-                            // Daftarkan sistem simpan otomatis Geoman ke layer ini
-                            bindGeomanPersistence(layer);
-
-                            layer.bindPopup('<b style="color:' + color + ';">[' + name.toUpperCase() + ']</b><br>' + popupContent(feature.properties));
-                            // Hapus drawnItems.addLayer(layer) agar tidak dobel
+                        if (isChecked) {
+                            legendItem.classList.remove('disabled');
+                        } else {
+                            legendItem.classList.add('disabled');
                         }
-                    }).addTo(map);
-
-                    // Daftarkan ke activeLayers agar bisa di-Style dan Transparansi
-                    window.activeLayers = window.activeLayers || {};
-                    window.activeLayers[name] = {
-                        layer: layerGroups[name],
-                        type: 'shp', // Anggap shp agar bisa pakai menu Style
-                        data: geojsonData,
-                        visible: true
-                    };
-                })
-                .catch(err => console.error('Gagal load ' + name + ':', err));
-        }
-
-        // ============================================================
-        // INTEGRASI DATABASE KE SIDEBAR (TOC)
-        // ============================================================
-        function addDbLayerToSidebar(name, label, color) {
-            var layerList = document.getElementById('layerList');
-            var card = document.createElement('div');
-            card.className = 'layer-card';
-            card.id = 'card_db_' + name;
-
-            var isJalan = name.toLowerCase() === 'jalan';
-            var isTower = name.toLowerCase() === 'tower';
-
-            var swatchW = "15px";
-            var swatchH = isJalan ? "3px" : "12px";
-            if (isTower) swatchW = "12px"; // Buat jadi kotak sama sisi dulu agar jadi bulat sempurna
-
-            var swatchBorder = isJalan ? "none" : "1px solid white";
-            var swatchRadius = isTower ? "50%" : "2px";
-
-            card.innerHTML = `
-            <h4>🗄️ Database: ${label}</h4>
-            <div class="layer-card-actions">
-                <button onclick="toggleDbLayerVisibility('${name}', this)" id="btnVisDb_${name}">👁️ Sembunyi</button>
-                <button onclick="zoomToDbLayer('${name}')">🔍 Zoom</button>
-                <button onclick="setupSymbology('${name}')">🎨 Style</button>
-            </div>
-            
-            <div id="legend_${name.replace(/[^a-zA-Z0-9]/g, '_')}" style="margin-top: 10px; display: flex; align-items: center; gap: 8px; font-size: 11px; color: #a0aec0;">
-                <span style="width: ${swatchW}; height: ${swatchH}; background: ${color}; border: ${swatchBorder}; border-radius: ${swatchRadius};"></span>
-                <span>Simbol Data ${label}</span>
-            </div>
-
-            <div id="advanced_legend_${name.replace(/[^a-zA-Z0-9]/g, '_')}" style="margin-top: 10px; border-top: 1px dashed #0f3460; padding-top: 10px; display: none;">
-                <p onclick="toggleLegendContent('${name.replace(/[^a-zA-Z0-9]/g, '_')}')" style="font-size: 10px; color: #3498db; margin-bottom: 5px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 5px;">
-                    <span id="arrow_${name.replace(/[^a-zA-Z0-9]/g, '_')}">▼</span> Legenda:
-                </p>
-                <div class="legend-items-container" style="display: flex; flex-direction: column; gap: 5px;"></div>
-            </div>
-
-            <label style="font-size:10px; color:#a0aec0; margin-top:10px; display:block;">Transparansi:</label>
-            <input type="range" class="layer-opacity" min="0" max="100" value="25" oninput="changeOpacity('${name}', this.value)">
-        `;
-            layerList.appendChild(card);
-        }
-
-        window.toggleDbLayerVisibility = function (tableName, btn) {
-            var layer = layerGroups[tableName];
-            if (!layer) return;
-
-            var isVisible = btn.innerText.includes("Sembunyi");
-            if (isVisible) {
-                map.removeLayer(layer);
-                btn.innerText = "👁️ Tampilkan";
-            } else {
-                map.addLayer(layer);
-                btn.innerText = "👁️ Sembunyi";
-            }
-        };
-
-        window.zoomToDbLayer = function (tableName) {
-            var layer = layerGroups[tableName];
-            if (!layer) return;
-
-            if (layer.getBounds) {
-                map.fitBounds(layer.getBounds());
-            }
-        };
-
-        function loadAllLayers() {
-            drawnItems.clearLayers();
-            var labels = { jalan: '🛣️ Jalan', landuse: '🏞️ Landuse', tower: '📡 Tower', wilayah: '🏘️ Wilayah' };
-
-            // Bersihkan area sidebar secara total agar tidak dobel
-            var layerList = document.getElementById('layerList');
-            layerList.innerHTML = '';
-
-            for (var name in layerColors) {
-                loadLayer(name, layerColors[name]);
-                addDbLayerToSidebar(name, labels[name], layerColors[name]);
-            }
-
-            // Inisialisasi kunci pertama kali
-            setTimeout(updateEditableLayers, 1000);
-        }
-
-        loadAllLayers();
-
-        // ============================================================
-        // KOORDINAT KURSOR (KIRI BAWAH)
-        // ============================================================
-        var coordControl = L.control({ position: 'bottomleft' });
-        coordControl.onAdd = function () {
-            this._div = L.DomUtil.create('div', 'mouse-coordinates');
-            this._div.innerHTML = 'Lat: 0, Lng: 0';
-            return this._div;
-        };
-        coordControl.addTo(map);
-
-        map.on('mousemove', function (e) {
-            coordControl._div.innerHTML =
-                'Lat: ' + e.latlng.lat.toFixed(6) + ' | ' +
-                'Lng: ' + e.latlng.lng.toFixed(6);
-        });
-
-        // ============================================================
-        // DRAW CONTROL — berubah otomatis sesuai tabel yang dipilih
-        // ============================================================
-        var drawOptions = {
-            jalan: { polygon: false, polyline: true, rectangle: false, circle: false, marker: false, circlemarker: false },
-            landuse: { polygon: true, polyline: false, rectangle: true, circle: false, marker: false, circlemarker: false },
-            tower: { polygon: false, polyline: false, rectangle: false, circle: false, marker: true, circlemarker: false },
-            wilayah: { polygon: true, polyline: false, rectangle: true, circle: false, marker: false, circlemarker: false }
-        };
-
-        var drawControl = null;
-
-        function updateDrawControl() {
-            // Hapus draw control lama
-            if (drawControl) {
-                map.removeControl(drawControl);
-            }
-            var selected = document.getElementById('layerSelect').value;
-            drawControl = new L.Control.Draw({
-                edit: { featureGroup: drawnItems },
-                draw: drawOptions[selected]
-            });
-            map.addControl(drawControl);
-        }
-
-        // Pasang saat pertama kali
-        updateDrawControl();
-
-        // Update saat dropdown berubah
-        document.getElementById('layerSelect').addEventListener('change', updateDrawControl);
-
-        // ============================================================
-        // FORM INPUT PER TABEL
-        // ============================================================
-        // ============================================================
-        // MODAL FORM DINAMIS (PENGGANTI PROMPT) - VERSI STABIL
-        // ============================================================
-        var providerList = [];
-        function fetchProviders() {
-            fetch('/api/provider')
-                .then(res => res.json())
-                .then(data => {
-                    providerList = Array.isArray(data) ? data : [];
-                    console.log("Daftar Provider Berhasil Dimuat:", providerList.length);
-                })
-                .catch(err => console.error("Gagal ambil provider:", err));
-        }
-        fetchProviders();
-
-        function showFeatureModal(tableName, callback) {
-            console.log("Membuka Modal untuk tabel:", tableName);
-
-            // Tambahkan Alert untuk Debugging (Hapus jika sudah lancar)
-            // alert("DEBUG: Mencoba membuka formulir untuk tabel " + tableName);
-
-            var modal = document.getElementById('modalFeature');
-            var formFields = document.getElementById('formFields');
-            var title = document.getElementById('modalTitle');
-
-            if (!modal || !formFields) {
-                alert("❌ Error: Elemen Modal tidak ditemukan di HTML!");
-                return;
-            }
-
-            title.innerText = "📝 Data Baru: " + tableName.toUpperCase();
-            formFields.innerHTML = ""; // Reset
-
-            var fields = [];
-            if (tableName === 'jalan') {
-                fields = [
-                    { name: 'nama_jalan', label: 'Nama Jalan', type: 'text', val: 'Jalan Baru' },
-                    { name: 'lebar_jalan', label: 'Lebar (m)', type: 'number', val: 5 },
-                    { name: 'konstruksi', label: 'Konstruksi', type: 'select', options: ['aspal', 'beton', 'tanah'] },
-                    { name: 'kondisi', label: 'Kondisi', type: 'select', options: ['baik', 'sedang', 'rusak'] },
-                    { name: 'kelas', label: 'Kelas Jalan', type: 'select', options: ['lokal', 'kolektor', 'arteri'] },
-                    { name: 'arah', label: 'Arah Jalan', type: 'select', options: ['1 arah', '2 arah'] }
-                ];
-            } else if (tableName === 'tower') {
-                // Pastikan options provider tidak bikin error jika kosong
-                var pOpts = providerList.length > 0
-                    ? providerList.map(p => ({ val: p.id_provider, label: p.provider }))
-                    : [{ val: 1, label: 'Default Provider' }];
-
-                fields = [
-                    { name: 'tinggi', label: 'Tinggi (m)', type: 'number', val: 30 },
-                    { name: 'luas_tapak', label: 'Luas Tapak (m²)', type: 'number', val: 50 },
-                    { name: 'konstruksi', label: 'Konstruksi', type: 'select', options: ['baja', 'beton'] },
-                    { name: 'tahun_pembuatan', label: 'Tahun Pembuatan', type: 'number', val: 2024 },
-                    { name: 'pt_pembuat', label: 'PT Pembuat', type: 'text', val: '' },
-                    { name: 'id_provider', label: 'Pilih Provider', type: 'select', options: pOpts }
-                ];
-            } else if (tableName === 'landuse') {
-                fields = [
-                    { name: 'penggunaan', label: 'Penggunaan Lahan', type: 'text', val: 'Permukiman' },
-                    { name: 'luas', label: 'Luas Estimasi (m²)', type: 'number', val: 1000 }
-                ];
-            } else if (tableName === 'wilayah') {
-                fields = [
-                    { name: 'kabupaten', label: 'Nama Kabupaten', type: 'text', val: '' },
-                    { name: 'nama_bupati', label: 'Nama Bupati', type: 'text', val: '' }
-                ];
-            }
-
-            fields.forEach(f => {
-                var div = document.createElement('div');
-                div.style.marginBottom = "12px";
-                div.innerHTML = `<label style="display:block; font-size:12px; color:#a0aec0; margin-bottom:5px; font-weight:bold;">${f.label}:</label>`;
-
-                if (f.type === 'select') {
-                    var sel = document.createElement('select');
-                    sel.name = f.name;
-                    sel.className = "modal-input";
-                    sel.style = "width:100%; padding:10px; border-radius:8px; background:#0f3460; color:white; border:1px solid #3498db; outline:none;";
-                    f.options.forEach(opt => {
-                        var o = document.createElement('option');
-                        o.value = typeof opt === 'object' ? opt.val : opt;
-                        o.text = typeof opt === 'object' ? opt.label : opt;
-                        sel.appendChild(o);
                     });
-                    div.appendChild(sel);
-                } else {
-                    var inp = document.createElement('input');
-                    inp.type = f.type;
-                    inp.name = f.name;
-                    inp.value = f.val;
-                    inp.className = "modal-input";
-                    inp.style = "width:100%; padding:10px; border-radius:8px; background:#0f3460; color:white; border:1px solid #3498db; outline:none;";
-                    div.appendChild(inp);
                 }
-                formFields.appendChild(div);
-            });
-
-            // Tampilkan Modal
-            modal.style.display = "block";
-
-            // Pasang Event Listener Form
-            var form = document.getElementById('featureForm');
-            form.onsubmit = function (e) {
-                e.preventDefault();
-                console.log("Submit Form...");
-                var fd = new FormData(form);
-                var result = {};
-                fd.forEach((v, k) => { result[k] = v; });
-                modal.style.display = "none";
-                callback(result);
-            };
-
-            document.getElementById('cancelFeature').onclick = function () {
-                modal.style.display = "none";
-                callback(null);
-            };
+            })(key);
         }
+    }
+    setupCheckboxes();
 
+    // ============================================================
+    // KOORDINAT KURSOR (KIRI BAWAH)
+    // ============================================================
+    var coordControl = L.control({ position: 'bottomleft' });
+    coordControl.onAdd = function() {
+        this._div = L.DomUtil.create('div', 'mouse-coordinates');
+        this._div.innerHTML = 'Lat: 0, Lng: 0';
+        return this._div;
+    };
+    coordControl.addTo(map);
 
+    map.on('mousemove', function(e) {
+        coordControl._div.innerHTML = 
+            'Lat: ' + e.latlng.lat.toFixed(6) + ' | ' + 
+            'Lng: ' + e.latlng.lng.toFixed(6);
+    });
 
-        // Hubungkan Dropdown Tabel dengan Mesin Geoman
-        function activateGeomanDraw() {
-            var selected = document.getElementById('layerSelect').value;
+    // ============================================================
+    // DRAW CONTROL — berubah otomatis sesuai tabel yang dipilih
+    // ============================================================
+    var drawOptions = {
+        jalan:   { polygon: false, polyline: true,  rectangle: false, circle: false, marker: false, circlemarker: false },
+        landuse: { polygon: true,  polyline: false, rectangle: true,  circle: false, marker: false, circlemarker: false },
+        tower:   { polygon: false, polyline: false, rectangle: false, circle: false, marker: true,  circlemarker: false },
+        wilayah: { polygon: true,  polyline: false, rectangle: true,  circle: false, marker: false, circlemarker: false }
+    };
 
-            // Matikan semua mode gambar sebelumnya
-            map.pm.disableDraw();
+    var drawControl = null;
 
-            if (selected === 'jalan') {
-                map.pm.enableDraw('Line', { snappable: true });
-            } else if (selected === 'tower') {
-                map.pm.enableDraw('Marker', { snappable: true });
-            } else {
-                map.pm.enableDraw('Polygon', { snappable: true });
-            }
+    function updateDrawControl() {
+        // Hapus draw control lama
+        if (drawControl) {
+            map.removeControl(drawControl);
         }
-
-        // ============================================================
-        // FITUR SMART-LOCK: HANYA EDIT TABEL YANG DIPILIH
-        // ============================================================
-        function updateEditableLayers() {
-            var activeTable = document.getElementById('layerSelect').value;
-            var isGlobalEditActive = map.pm.globalEditEnabled();
-
-            map.eachLayer(layer => {
-                if (layer.tableName) {
-                    if (layer.tableName === activeTable) {
-                        layer.options.pmIgnore = false;
-                        // Hanya nyalakan handles jika memang mode edit global sedang aktif
-                        if (isGlobalEditActive) layer.pm.enable();
-                    } else {
-                        layer.options.pmIgnore = true;
-                        layer.pm.disable(); // Pastikan tertutup jika tidak dipilih
-                    }
-                }
-            });
-        }
-
-        // Jalankan kunci setiap kali pilihan tabel berubah
-        document.getElementById('layerSelect').addEventListener('change', updateEditableLayers);
-
-        // Pastikan saat tombol Edit diklik, filter ini langsung jalan
-        map.on('pm:globaleditmodetoggled', function (e) {
-            if (e.enabled) updateEditableLayers();
+        var selected = document.getElementById('layerSelect').value;
+        drawControl = new L.Control.Draw({
+            edit: { featureGroup: drawnItems },
+            draw: drawOptions[selected]
         });
+        map.addControl(drawControl);
+    }
 
-        // Sinkronisasi Toolbar Geoman dengan Dropdown Tabel
-        map.on('pm:drawstart', function (e) {
-            var shape = e.shape;
-            var select = document.getElementById('layerSelect');
-            if (shape === 'Marker') {
-                select.value = 'tower';
-            } else if (shape === 'Line') {
-                select.value = 'jalan';
-            } else if (shape === 'Polygon' || shape === 'Rectangle') {
-                // Default ke landuse, tapi user bisa ganti ke wilayah jika perlu
-                if (select.value !== 'wilayah') select.value = 'landuse';
+    // Pasang saat pertama kali
+    updateDrawControl();
+
+    // Update saat dropdown berubah
+    document.getElementById('layerSelect').addEventListener('change', updateDrawControl);
+
+    // ============================================================
+    // FORM INPUT PER TABEL
+    // ============================================================
+    function getFormData(tableName) {
+        var data = {};
+
+        if (tableName === 'jalan') {
+            data.nama_jalan  = prompt("Nama Jalan:", "Jalan Baru");
+            if (data.nama_jalan == null) return null;
+            data.lebar_jalan = parseFloat(prompt("Lebar Jalan (meter):", "5")) || 0;
+            data.konstruksi  = prompt("Konstruksi (aspal/beton/tanah):", "aspal") || '';
+            data.kondisi     = prompt("Kondisi (baik/sedang/rusak):", "baik") || '';
+            data.kelas       = prompt("Kelas Jalan:", "lokal") || '';
+            data.arah        = prompt("Arah (1 arah/2 arah):", "2 arah") || '';
+        }
+        else if (tableName === 'landuse') {
+            data.penggunaan = prompt("Penggunaan Lahan:", "Permukiman");
+            if (data.penggunaan == null) return null;
+            data.luas       = parseFloat(prompt("Luas (m²):", "1000")) || 0;
+        }
+        else if (tableName === 'tower') {
+            data.tinggi          = parseFloat(prompt("Tinggi Tower (meter):", "30")) || 0;
+            if (isNaN(data.tinggi)) return null;
+            data.luas_tapak      = parseFloat(prompt("Luas Tapak (m²):", "50")) || 0;
+            data.konstruksi      = prompt("Konstruksi (baja/beton):", "baja") || '';
+            data.tahun_pembuatan = prompt("Tahun Pembuatan:", "2020") || '';
+            data.pt_pembuat      = prompt("PT Pembuat:", "") || '';
+            data.id_provider     = parseInt(prompt("ID Provider:", "1")) || 1;
+        }
+        else if (tableName === 'wilayah') {
+            data.kabupaten  = prompt("Nama Kabupaten/Kota:", "");
+            if (data.kabupaten == null) return null;
+            data.nama_bupati = prompt("Nama Bupati/Walikota:", "") || '';
+        }
+
+        return data;
+    }
+
+    // ============================================================
+    // EVENT: SIMPAN FEATURE BARU
+    // ============================================================
+    map.on(L.Draw.Event.CREATED, function (event) {
+        var layer = event.layer;
+        var geojson = layer.toGeoJSON();
+        var tableName = document.getElementById('layerSelect').value;
+
+        var formData = getFormData(tableName);
+        if (formData === null) return;
+
+        formData.geometry = geojson.geometry;
+
+        fetch('/api/' + tableName, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(formData)
+        })
+        .then(res => {
+            if (!res.ok) {
+                return res.json().then(errData => { throw new Error(errData.error); });
             }
-        });
+            return res.json();
+        })
+        .then(data => {
+            alert("✅ Berhasil simpan ke tabel " + tableName.toUpperCase() + "! (ID: " + data.id + ")");
+            // Reload layer yang bersangkutan agar data baru muncul
+            loadLayer(tableName, layerColors[tableName]);
+        })
+        .catch(err => alert("❌ Gagal simpan: " + err.message));
+    });
 
-        // Tangani saat gambar selesai di Geoman
-        map.on('pm:create', function (e) {
-            var layer = e.layer;
+    // ============================================================
+    // EVENT: EDIT BENTUK (GEOMETRI)
+    // ============================================================
+    map.on(L.Draw.Event.EDITED, function (event) {
+        var layers = event.layers;
+        layers.eachLayer(function (layer) {
+            var table = layer.tableName;
+            var id = layer.featureId;
             var geojson = layer.toGeoJSON();
-            var tableName = document.getElementById('layerSelect').value;
 
-            // Pastikan data tersambung ke sistem edit/hapus
-            if (layer.tableName === undefined) {
-                layer.tableName = tableName;
-                bindGeomanPersistence(layer);
-            }
-
-            // Panggil Modal Profesional sebagai pengganti Prompt
-            showFeatureModal(tableName, function (formData) {
-                if (formData === null) {
-                    map.removeLayer(layer);
-                    return;
-                }
-
-                formData.geometry = geojson.geometry;
-
-                fetch('/api/' + tableName, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(formData)
-                })
-                    .then(res => res.json())
-                    .then(data => {
-                        alert("✅ Berhasil simpan ke tabel " + tableName.toUpperCase() + "!");
-                        loadLayer(tableName, layerColors[tableName]);
-                        map.removeLayer(layer);
-                    })
-                    .catch(err => alert("❌ Gagal simpan: " + err.message));
-            });
-        });
-
-        // Modifikasi updateDrawControl agar memakai Geoman
-        function updateDrawControl() {
-            // Kita tidak lagi pakai L.Control.Draw bawaan
-            // Kita biarkan user klik tombol toolbar samping Geoman saja yang lebih sakti
-        }
-
-        // Aktifkan toolbar Geoman yang modern
-        map.pm.addControls({
-            position: 'topleft',
-            drawMarker: true,
-            drawPolyline: true,
-            drawRectangle: true,
-            drawPolygon: true,
-            editMode: true,
-            dragMode: true,
-            removalMode: true,
-        });
-
-        // Kustomisasi Tulisan (Tooltip) di Toolbar
-        map.pm.setLang('en', {
-            buttonTitles: {
-                cutButton: 'Cut Layar (Area)'
-            }
-        }, 'en');
-
-        // Pantau kapan magnet aktif (untuk feedback visual)
-        map.on('pm:snap', function (e) {
-            // Geoman sudah otomatis memberikan kotak kecil saat snap
-            console.log("Snapped to:", e.workingLayer);
-        });
-
-        // ============================================================
-        // FITUR SIMPAN PERUBAHAN (EDIT, MOVE, DELETE, CUT)
-        // ============================================================
-
-        // 1. Tangani PERUBAHAN (Edit Vertex, Geser Posisi, Cut)
-        map.on('pm:remove', function (e) {
-            var layer = e.layer;
-            if (layer.tableName && layer.featureId) {
-                if (confirm("⚠️ Hapus data ini secara permanen dari database?")) {
-                    fetch('/api/' + layer.tableName + '/' + layer.featureId, { method: 'DELETE' })
-                        .then(res => res.json())
-                        .then(data => alert("✅ Data berhasil dihapus dari database!"))
-                        .catch(err => alert("❌ Gagal hapus: " + err.message));
-                } else {
-                    // Jika batal, muat ulang layer agar muncul lagi
-                    loadLayer(layer.tableName, layerColors[layer.tableName]);
-                }
-            }
-        });
-
-        // 2. Tangani PEMOTONGAN (Cut) secara global
-        map.on('pm:cut', function (e) {
-            var newLayer = e.layer;
-            var oldLayer = e.originalLayer;
-
-            if (oldLayer.tableName && oldLayer.featureId) {
-                var table = oldLayer.tableName;
-                var id = oldLayer.featureId;
-                var geojson = newLayer.toGeoJSON();
-
-                console.log("✂️ Memproses pemotongan pada:", table, id);
-
+            if (table && id) {
                 fetch('/api/' + table + '/' + id + '/geometry', {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ geometry: geojson.geometry })
                 })
-                    .then(res => res.json())
-                    .then(data => {
-                        console.log('✅ Berhasil Simpan Hasil Potongan!');
-                        // Muat ulang layer agar data terbaru dari DB muncul
-                        loadLayer(table, layerColors[table]);
-                        // Hapus layer sementara hasil cut Geoman
-                        map.removeLayer(newLayer);
-                    })
-                    .catch(err => alert('❌ Gagal Simpan Hasil Potongan: ' + err.message));
-            }
-        });
-
-        // Event saat objek di-update (Vertex digeser atau objek dipindah)
-        map.on('pm:globaleditmodetoggled', function (e) {
-            // Jika mode edit dimatikan, kita bisa pastikan semua tersimpan
-            // Tapi lebih aman pakai event per-layer di bawah
-        });
-
-        // Fungsi sakti untuk mendaftarkan auto-save pada setiap layer
-        function bindGeomanPersistence(layer) {
-            // Simpan saat vertex selesai digeser atau objek selesai dipindah (Drag)
-            layer.on('pm:update pm:dragend pm:cut', function (e) {
-                var table = layer.tableName;
-                var id = layer.featureId;
-                var geojson = layer.toGeoJSON();
-
-                if (table && id) {
-                    fetch('/api/' + table + '/' + id + '/geometry', {
-                        method: 'PUT',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ geometry: geojson.geometry })
-                    })
-                        .then(res => res.json())
-                        .then(data => {
-                            console.log('✅ Update Geometri Berhasil:', table, id);
-                            // Beri tanda visual kecil (opsional)
-                        })
-                        .catch(err => alert('❌ Gagal Simpan Perubahan: ' + err.message));
-                }
-            });
-        }
-
-        // ============================================================
-        // EVENT: EDIT BENTUK (GEOMETRI) - BACKUP LAMA (Bisa dihapus)
-        // ============================================================
-
-        // ============================================================
-        // EVENT: HAPUS DATA
-        // ============================================================
-        map.on(L.Draw.Event.DELETED, function (event) {
-            var layers = event.layers;
-            layers.eachLayer(function (layer) {
-                var table = layer.tableName;
-                var id = layer.featureId;
-
-                if (table && id) {
-                    fetch('/api/' + table + '/' + id, {
-                        method: 'DELETE'
-                    })
-                        .then(res => res.json())
-                        .then(data => console.log('Hapus Berhasil:', data))
-                        .catch(err => alert('Gagal Hapus: ' + err.message));
-                }
-            });
-            alert('🗑️ Data telah dihapus dari database!');
-        });
-
-
-
-        // ============================================================
-        // LOGIKA MODAL (QUERY & UPLOAD)
-        // ============================================================
-        // LOGIKA TOGGLE SIDEBAR
-        document.getElementById('toggleSidebar').onclick = function () {
-            var sidebar = document.getElementById('layerSidebar');
-            sidebar.classList.toggle('collapsed');
-
-            // Beri waktu animasi selesai, lalu resize peta
-            setTimeout(function () {
-                map.invalidateSize();
-            }, 300);
-        };
-
-        const modalQ = document.getElementById("modalQuery");
-        const modalUp = document.getElementById("modalUpload");
-        const modalSHP = document.getElementById("modalSHP");
-        const modalSym = document.getElementById("modalSymbology");
-
-        const btnQ = document.getElementById("btnQuery");
-        const btnUp = document.getElementById("btnUploadCitra");
-        const btnSHP = document.getElementById("btnUploadSHP");
-
-        const spanQ = document.querySelector(".closeQuery");
-        const spanUp = document.querySelector(".closeUpload");
-        const spanSHP = document.querySelector(".closeSHP");
-        const spanSym = document.querySelector(".closeSym");
-
-        // Tombol Buka
-        btnQ.onclick = () => modalQ.style.display = "block";
-        btnUp.onclick = () => modalUp.style.display = "block";
-        btnSHP.onclick = () => modalSHP.style.display = "block";
-
-        // Tombol Tutup (X)
-        spanQ.onclick = () => modalQ.style.display = "none";
-        spanUp.onclick = () => modalUp.style.display = "none";
-        spanSHP.onclick = () => modalSHP.style.display = "none";
-        spanSym.onclick = () => modalSym.style.display = "none";
-
-        // Tutup jika klik area di luar modal
-        window.addEventListener('click', (event) => {
-            if (event.target == modalQ) modalQ.style.display = "none";
-            if (event.target == modalUp) modalUp.style.display = "none";
-            if (event.target == modalSHP) modalSHP.style.display = "none";
-            if (event.target == modalSym) modalSym.style.display = "none";
-        });
-
-        document.getElementById('processUpload').onclick = function () {
-            var imgFile = document.getElementById('inputImage').files[0];
-            var worldFile = document.getElementById('inputWorld').files[0];
-
-            if (!imgFile || !worldFile) {
-                alert("Harap pilih kedua file (Gambar + World File)!");
-                return;
-            }
-
-            console.log("Memulai proses upload...");
-            var reader = new FileReader();
-            reader.onload = function (e) {
-                console.log("File World terbaca.");
-                var lines = e.target.result.split(/\r?\n/).map(l => l.trim()).filter(l => l !== "");
-
-                if (lines.length < 6) {
-                    alert("❌ File World tidak valid! Harus ada minimal 6 baris angka.");
-                    return;
-                }
-
-                try {
-                    var A = parseFloat(lines[0]);
-                    var E = parseFloat(lines[3]);
-                    var C = parseFloat(lines[4]);
-                    var F = parseFloat(lines[5]);
-
-                    if (isNaN(A) || isNaN(C) || isNaN(F)) throw new Error("Data World bukan angka.");
-
-                    console.log("File Info:", imgFile.name, imgFile.size, imgFile.type);
-
-                    // Deteksi file TIFF (Magic Number: II* atau MM*)
-                    var tiffReader = new FileReader();
-                    tiffReader.onload = function (tf) {
-                        var bytes = new Uint8Array(tf.target.result);
-                        var isTiff = (bytes[0] === 0x49 && bytes[1] === 0x49) || (bytes[0] === 0x4D && bytes[1] === 0x4D);
-                        if (isTiff) {
-                            alert("❌ TERDETEKSI: Ini adalah file TIFF (.tif).\n\nBrowser tidak bisa menampilkan format TIFF secara langsung. Harap buka file ini di Photoshop/GIMP dan 'Export as JPG' atau 'Save as PNG' dulu ya.");
-                            return;
-                        }
-
-                        // Jika bukan TIFF, lanjut proses gambar biasa
-                        prosesGambarNormal(imgFile, A, E, C, F);
-                    };
-                    tiffReader.readAsArrayBuffer(imgFile.slice(0, 4));
-
-                    function prosesGambarNormal(file, A, E, C, F) {
-                        var img = new Image();
-                        img.onload = function () {
-                            var xMin = C;
-                            var yMax = F;
-                            var xMax = C + (img.width * A);
-                            var yMin = F + (img.height * E);
-
-                            var bounds = [[yMin, xMin], [yMax, xMax]];
-                            var newOverlay = L.imageOverlay(img.src, bounds, { opacity: 0.8, interactive: true }).addTo(map);
-
-                            // Daftarkan ke Sidebar
-                            addLayerToSidebar(newOverlay, file.name, 'citra');
-
-                            map.fitBounds(bounds);
-                            modalUp.style.display = "none";
-                            alert("✅ SUKSES! Citra muncul di peta.");
-                            // Jangan revoke dulu agar tetap bisa on/off
-                            // URL.revokeObjectURL(img.src);
-                        };
-
-                        img.onerror = function () {
-                            alert("❌ Gagal memuat gambar!\nUkuran: " + (file.size / 1024 / 1024).toFixed(1) + " MB\n\nKemungkinan resolusi (pixel) terlalu besar untuk browser ini.");
-                        };
-                        img.src = URL.createObjectURL(file);
-                    }
-
-                } catch (err) {
-                    alert("❌ Gagal: " + err.message);
-                }
-            };
-            reader.readAsText(worldFile);
-        };
-
-        // ============================================================
-        // LOGIKA UPLOAD SHAPEFILE (ZIP)
-        // ============================================================
-        document.getElementById('processSHP').onclick = function () {
-            var files = document.getElementById('inputSHP').files;
-            if (files.length === 0) {
-                alert("Harap pilih folder berisi Shapefile Bapak!");
-                return;
-            }
-
-            // Cari file .shp dan .dbf yang namanya sama
-            var shpFile = Array.from(files).find(f => f.name.toLowerCase().endsWith('.shp'));
-            var dbfFile = Array.from(files).find(f => f.name.toLowerCase().endsWith('.dbf') && f.name.split('.')[0] === shpFile?.name.split('.')[0]);
-
-            if (!shpFile || !dbfFile) {
-                alert("❌ Tidak ditemukan pasangan file .shp dan .dbf yang cocok di folder ini!");
-                return;
-            }
-
-            console.log("Ditemukan SHP:", shpFile.name, "dan DBF:", dbfFile.name);
-
-            var readerSHP = new FileReader();
-            var readerDBF = new FileReader();
-
-            readerSHP.onload = function (e1) {
-                readerDBF.onload = function (e2) {
-                    try {
-                        var geojson = shp.combine([shp.parseShp(e1.target.result), shp.parseDbf(e2.target.result)]);
-
-                        var shpLayer = L.geoJSON(geojson, {
-                            style: { color: "#f1c40f", weight: 3, opacity: 0.8, fillOpacity: 0.2 },
-                            onEachFeature: function (f, l) {
-                                l.bindPopup(popupContent(f.properties));
-                            }
-                        }).addTo(map);
-
-                        // Pindahkan penambahan ke Sidebar
-                        addLayerToSidebar(shpLayer, shpFile.name, 'shp', geojson);
-
-                        map.fitBounds(shpLayer.getBounds());
-                        modalSHP.style.display = "none";
-                        alert("✅ SUKSES! Shapefile berhasil ditampilkan.");
-                    } catch (err) {
-                        alert("❌ Gagal memproses SHP: " + err);
-                    }
-                };
-                readerDBF.readAsArrayBuffer(dbfFile);
-            };
-            readerSHP.readAsArrayBuffer(shpFile);
-        };
-
-        // ============================================================
-        // FUNGSI MANAJEMEN SIDEBAR & SIMBOLOGI
-        // ============================================================
-        function addLayerToSidebar(layer, name, type, rawData) {
-            var layerList = document.getElementById('layerList');
-
-            // Pastikan placeholder dibuang
-            var placeholder = layerList.querySelector('p');
-            if (placeholder && placeholder.innerText.includes('Belum ada data')) {
-                placeholder.remove();
-            }
-
-            var card = document.createElement('div');
-            card.className = 'layer-card';
-
-            var icon = type === 'citra' ? '🛰️' : '📂';
-            var stylingBtn = type === 'shp' ? `<button onclick="setupSymbology('${name}')">🎨 Style</button>` : '';
-
-            card.innerHTML = `
-            <h4>${icon} ${name}</h4>
-            <div class="layer-card-actions">
-                <button onclick="toggleLayerVisibility('${name}')" id="btnVis_${name}">👁️ Sembunyi</button>
-                <button onclick="zoomToLayer('${name}')">🔍 Zoom</button>
-                ${stylingBtn}
-                <button onclick="removeLayerFromSidebar('${name}')" style="background:#e74c3c;">🗑️ Hapus</button>
-            </div>
-            <label style="font-size:10px; color:#a0aec0; margin-top:10px; display:block;">Transparansi:</label>
-            <input type="range" class="layer-opacity" min="0" max="100" value="80" oninput="changeOpacity('${name}', this.value)">
-            
-            <div id="legend_${name.replace(/[^a-zA-Z0-9]/g, '_')}" style="margin-top: 10px; border-top: 1px dashed #0f3460; padding-top: 10px; display: none;">
-                <p onclick="toggleLegendContent('${name.replace(/[^a-zA-Z0-9]/g, '_')}')" style="font-size: 10px; color: #3498db; margin-bottom: 5px; font-weight: bold; cursor: pointer; display: flex; align-items: center; gap: 5px;">
-                    <span id="arrow_${name.replace(/[^a-zA-Z0-9]/g, '_')}">▼</span> Legenda:
-                </p>
-                <div class="legend-items-container" style="display: flex; flex-direction: column; gap: 5px;"></div>
-            </div>
-        `;
-
-            layerList.appendChild(card);
-
-            // Simpan referensi layer secara global agar bisa diakses fungsi luar
-            window.activeLayers = window.activeLayers || {};
-            window.activeLayers[name] = { layer: layer, type: type, data: rawData, visible: true };
-        }
-
-        window.toggleLayerVisibility = function (name) {
-            var obj = window.activeLayers[name];
-            var btn = document.getElementById('btnVis_' + name);
-            if (obj.visible) {
-                map.removeLayer(obj.layer);
-                btn.innerText = "👁️ Tampilkan";
-                obj.visible = false;
-            } else {
-                obj.layer.addTo(map);
-                btn.innerText = "👁️ Sembunyi";
-                obj.visible = true;
-            }
-        };
-
-        window.zoomToLayer = function (name) {
-            var obj = window.activeLayers[name];
-            if (obj.type === 'shp') map.fitBounds(obj.layer.getBounds());
-            else map.fitBounds(obj.layer.getBounds());
-        };
-
-        window.changeOpacity = function (name, val) {
-            var obj = window.activeLayers[name];
-            var opacity = val / 100;
-            if (obj.type === 'shp') {
-                // Hanya ubah fillOpacity agar garis tetap solid
-                obj.layer.setStyle({ fillOpacity: opacity });
-            } else {
-                obj.layer.setOpacity(opacity);
-            }
-        };
-
-        window.removeLayerFromSidebar = function (name) {
-            if (confirm("Hapus layer ini dari peta?")) {
-                map.removeLayer(window.activeLayers[name].layer);
-                delete window.activeLayers[name];
-                document.querySelector(`[onclick*="${name}"]`).closest('.layer-card').remove();
-            }
-        };
-
-        window.toggleLegendContent = function (safeId) {
-            var legendDiv = document.getElementById('advanced_legend_' + safeId) || document.getElementById('legend_' + safeId);
-            var container = legendDiv.querySelector('.legend-items-container');
-            var arrow = document.getElementById('arrow_' + safeId);
-
-            if (container.style.display === 'none') {
-                container.style.display = 'flex';
-                arrow.innerText = '▼';
-            } else {
-                container.style.display = 'none';
-                arrow.innerText = '▶';
-            }
-        };
-
-        // LOGIKA SIMBOLOGI (WARNA BERDASARKAN KOLOM)
-        var currentStyleName = "";
-        window.setupSymbology = function (name) {
-            currentStyleName = name;
-            var obj = window.activeLayers[name];
-            var select = document.getElementById('selectField');
-            var selectLabel = document.getElementById('selectLabelField');
-
-            select.innerHTML = '<option value="">-- Tanpa Kolom (Warna Tunggal) --</option>';
-            selectLabel.innerHTML = '';
-
-            // Ambil list kolom dari data pertama
-            var props = obj.data.features[0].properties;
-            for (var key in props) {
-                var opt = document.createElement('option');
-                opt.value = key; opt.innerText = key;
-                select.appendChild(opt);
-
-                var opt2 = document.createElement('option');
-                opt2.value = key; opt2.innerText = key;
-                selectLabel.appendChild(opt2);
-            }
-            document.getElementById('modalSymbology').style.display = 'block';
-        };
-
-        document.getElementById('applySymbology').onclick = function () {
-            var field = document.getElementById('selectField').value;
-            var dash = document.getElementById('lineStyle').value;
-            var outline = document.getElementById('lineColor').value;
-            var showLabel = document.getElementById('checkLabel').checked;
-            var labelField = document.getElementById('selectLabelField').value;
-
-            var obj = window.activeLayers[currentStyleName];
-
-            var colorMap = {};
-            if (field) {
-                var values = [...new Set(obj.data.features.map(f => f.properties[field]))];
-                values.forEach(v => {
-                    colorMap[v] = '#' + Math.floor(Math.random() * 16777215).toString(16);
-                });
-            } else {
-                var singleFill = '#' + Math.floor(Math.random() * 16777215).toString(16);
-                colorMap["__SINGLE__"] = singleFill;
-            }
-
-            // Deteksi tipe geometri
-            var firstGeom = obj.data.features[0].geometry.type;
-            var isLine = firstGeom.toLowerCase().includes('line');
-
-            // Update style layer
-            obj.layer.setStyle(function (feature) {
-                var catColor = field ? colorMap[feature.properties[field]] : null;
-                if (isLine) {
-                    return {
-                        color: field ? catColor : outline,
-                        dashArray: dash,
-                        weight: 4,
-                        opacity: 0.8
-                    };
-                } else {
-                    return {
-                        fillColor: field ? catColor : "#3498db",
-                        color: outline,
-                        dashArray: dash,
-                        weight: 2,
-                        fillOpacity: 0.5
-                    };
-                }
-            });
-
-            // Tangani Labeling & Update Warna Marker (Tower)
-            obj.layer.eachLayer(function (l) {
-                // 1. Update Warna Marker jika itu Tower
-                if (l instanceof L.Marker || (l.options && l.options.icon)) {
-                    var featColor = field ? colorMap[l.feature.properties[field]] : "#e67e22";
-                    if (l.setIcon) {
-                        l.setIcon(L.divIcon({
-                            className: 'tower-icon',
-                            html: `<div style="background-color:${featColor}; width:12px; height:12px; border:2px solid white; border-radius:50%; box-shadow:0 0 5px rgba(0,0,0,0.5);"></div>`,
-                            iconSize: [12, 12],
-                            iconAnchor: [6, 6]
-                        }));
-                    }
-                }
-
-                l.unbindTooltip();
-                if (showLabel && labelField) {
-                    var text = l.feature.properties[labelField] || "";
-                    if (text) {
-                        l.bindTooltip(text.toString(), {
-                            permanent: true,
-                            direction: 'center',
-                            className: 'shp-label'
-                        });
-                    }
-                }
-            });
-
-            // UPDATE LEGENDA DI SIDEBAR
-            var safeId = currentStyleName.replace(/[^a-zA-Z0-9]/g, '_');
-
-            // Cari container legenda (bisa yang shp atau yang db)
-            var advLegend = document.getElementById('advanced_legend_' + safeId);
-            var simpleLegend = document.getElementById('legend_' + safeId);
-            var legendDiv = advLegend || simpleLegend;
-
-            if (advLegend && simpleLegend) {
-                // Jika ini data database, sembunyikan simbol tunggal bawaan
-                simpleLegend.style.display = 'none';
-            }
-
-            var container = legendDiv.querySelector('.legend-items-container');
-            container.innerHTML = '';
-            legendDiv.style.display = 'block';
-
-            // Deteksi tipe geometri
-            var firstGeom = obj.data.features[0].geometry.type;
-            var isLine = firstGeom.toLowerCase().includes('line');
-            var isPoint = firstGeom.toLowerCase().includes('point');
-
-            var swatchW = "15px";
-            var swatchH = isLine ? "3px" : "12px";
-            if (isPoint) swatchW = "12px";
-
-            var swatchBorder = isLine ? "none" : `1px solid ${outline}`;
-            var swatchRadius = isPoint ? "50%" : "2px";
-
-            if (field) {
-                for (var val in colorMap) {
-                    var item = document.createElement('div');
-                    item.style = "display: flex; align-items: center; gap: 8px; font-size: 11px; color: #a0aec0;";
-                    item.innerHTML = `<span style="width: ${swatchW}; height: ${swatchH}; background: ${colorMap[val]}; border: ${swatchBorder}; border-radius: ${swatchRadius};"></span> <span>${val}</span>`;
-                    container.appendChild(item);
-                }
-            } else {
-                var item = document.createElement('div');
-                item.style = "display: flex; align-items: center; gap: 8px; font-size: 11px; color: #a0aec0;";
-                var singleColor = isLine ? outline : "#3498db";
-                item.innerHTML = `<span style="width: ${swatchW}; height: ${swatchH}; background: ${singleColor}; border: ${swatchBorder}; border-radius: ${swatchRadius};"></span> <span>Warna Tunggal</span>`;
-                container.appendChild(item);
-            }
-
-            document.getElementById('modalSymbology').style.display = 'none';
-            alert("✅ Gaya, Label & Legenda berhasil diterapkan!");
-        };
-
-        function setSql(sql) { document.getElementById('sqlEditor').value = sql; }
-
-        document.getElementById('runQuery').onclick = function () {
-            var sqlText = document.getElementById('sqlEditor').value;
-            var head = document.getElementById('headQuery');
-            var body = document.getElementById('bodyQuery');
-
-            body.innerHTML = '<tr><td style="text-align:center;">Running...</td></tr>';
-            head.innerHTML = '';
-            queryResultLayer.clearLayers();
-
-            fetch('/api/query', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ sql: sqlText })
-            })
                 .then(res => res.json())
-                .then(data => {
-                    if (data.error) throw new Error(data.error);
+                .then(data => console.log('Update Berhasil:', data))
+                .catch(err => alert('Gagal Update: ' + err.message));
+            }
+        });
+        alert('✅ Perubahan bentuk berhasil disimpan!');
+    });
 
-                    // Render Header
-                    var hRow = "<tr>";
-                    data.columns.forEach(col => { hRow += `<th>${col}</th>`; });
-                    head.innerHTML = hRow + "</tr>";
+    // ============================================================
+    // EVENT: HAPUS DATA
+    // ============================================================
+    map.on(L.Draw.Event.DELETED, function (event) {
+        var layers = event.layers;
+        layers.eachLayer(function (layer) {
+            var table = layer.tableName;
+            var id = layer.featureId;
 
-                    // Cari tahu mana kolom geometri (case insensitive)
-                    var geomCol = data.columns.find(c => c.toLowerCase() === 'geometry');
-
-                    // Render Rows
-                    body.innerHTML = "";
-                    // Render Rows
-                    body.innerHTML = "";
-                    data.rows.forEach(row => {
-                        var tr = document.createElement("tr");
-
-                        data.columns.forEach(col => {
-                            var td = document.createElement("td");
-                            var val = row[col];
-
-                            // Deteksi jika ini adalah kolom geometri (case insensitive)
-                            if (col.toLowerCase() === 'geometry' && val) {
-                                // 1. Buat tombol ikon peta
-                                var btn = document.createElement("button");
-                                btn.className = "btn-view-geom";
-                                btn.innerHTML = "🗺️";
-                                btn.style.cursor = "pointer";
-                                btn.onclick = function () {
-                                    try {
-                                        var geo = JSON.parse(val);
-                                        // Buat layer highlight dengan gaya mencolok
-                                        var highlight = L.geoJSON(geo, {
-                                            style: { color: '#ff0000', weight: 10, opacity: 1 },
-                                            pointToLayer: function (f, latlng) {
-                                                return L.circleMarker(latlng, { radius: 15, color: '#ff0000', fillColor: '#ff0000', fillOpacity: 1 });
-                                            }
-                                        }).addTo(map);
-
-                                        map.fitBounds(highlight.getBounds());
-                                        modalQ.style.display = "none";
-
-                                        // LOGIKA BERKEDIP (Flash 3 kali)
-                                        var count = 0;
-                                        var interval = setInterval(() => {
-                                            if (map.hasLayer(highlight)) {
-                                                map.removeLayer(highlight);
-                                            } else {
-                                                highlight.addTo(map);
-                                            }
-                                            count++;
-                                            if (count >= 6) { // 3 kali nyala, 3 kali mati
-                                                clearInterval(interval);
-                                                map.removeLayer(highlight); // Pastikan akhirnya hilang
-                                            }
-                                        }, 300); // Kedipan setiap 0.3 detik
-
-                                    } catch (e) { alert("Geometri tidak valid: " + e.message); }
-                                };
-                                td.appendChild(btn);
-
-                                // 2. Tambahkan teks ringkas
-                                var txt = document.createElement("span");
-                                txt.innerHTML = (val.length > 15) ? val.substring(0, 15) + "..." : val;
-                                txt.style.color = "#888";
-                                txt.style.fontSize = "10px";
-                                td.appendChild(txt);
-                            } else {
-                                // Kolom biasa
-                                td.innerText = (val !== null && val !== undefined) ? val : "-";
-                            }
-                            tr.appendChild(td);
-                        });
-                        body.appendChild(tr);
-
-                        // Gambar ke peta untuk visualisasi massal
-                        if (geomCol && row[geomCol]) {
-                            try {
-                                var geo = JSON.parse(row[geomCol]);
-                                L.geoJSON(geo, {
-                                    style: { color: '#f1c40f', weight: 4, opacity: 0.8, fillColor: '#f1c40f', fillOpacity: 0.4 },
-                                    onEachFeature: function (f, l) {
-                                        l.bindPopup("<b>Hasil SQL</b><br>" + JSON.stringify(f.properties));
-                                    }
-                                }).addTo(queryResultLayer);
-                            } catch (e) { }
-                        }
-                    });
-
-                    // Zoom ke hasil jika ada fitur
-                    if (queryResultLayer.getLayers().length > 0) {
-                        map.fitBounds(queryResultLayer.getBounds());
-                        modalQ.style.display = "none";
-                        alert("📍 " + queryResultLayer.getLayers().length + " Fitur spasial ditemukan dan ditampilkan di peta (Warna Kuning)");
-                    } else if (geomCol) {
-                        alert("⚠️ Query berhasil, tapi tidak ada geometri valid yang bisa digambar.");
-                    }
+            if (table && id) {
+                fetch('/api/' + table + '/' + id, {
+                    method: 'DELETE'
                 })
-                .catch(err => {
-                    body.innerHTML = `<tr><td style="color:red;">Error: ${err.message}</td></tr>`;
-                });
-        }
-
-        // LOGIKA RESET QUERY
-        document.getElementById('resetQuery').onclick = function () {
-            document.getElementById('sqlEditor').value = "";
-            document.getElementById('headQuery').innerHTML = "";
-            document.getElementById('bodyQuery').innerHTML = "";
-            queryResultLayer.clearLayers();
-            alert("🧹 SQL Console telah dibersihkan!");
-        }
-        // ============================================================
-        // FITUR GPS REAL-TIME
-        // ============================================================
-        var userLocationMarker = null;
-        var userAccuracyCircle = null;
-        var isTracking = false;
-        var firstLocationFound = false; // Tambahkan flag ini
-
-        var btnGPS = document.getElementById('btnGPS');
-
-        function onLocationFound(e) {
-            var radius = e.accuracy / 2;
-
-            if (userLocationMarker) {
-                userLocationMarker.setLatLng(e.latlng);
-                userAccuracyCircle.setLatLng(e.latlng);
-                userAccuracyCircle.setRadius(radius);
-            } else {
-                // Icon titik biru berdenyut
-                var gpsIcon = L.divIcon({
-                    className: 'gps-location-dot',
-                    iconSize: [12, 12],
-                    html: '<div class="gps-pulse"></div>'
-                });
-                userLocationMarker = L.marker(e.latlng, { icon: gpsIcon }).addTo(map);
-                userAccuracyCircle = L.circle(e.latlng, radius, {
-                    color: '#3498db', weight: 1, opacity: 0.3, fillColor: '#3498db', fillOpacity: 0.1
-                }).addTo(map);
+                .then(res => res.json())
+                .then(data => console.log('Hapus Berhasil:', data))
+                .catch(err => alert('Gagal Hapus: ' + err.message));
             }
+        });
+        alert('🗑️ Data telah dihapus dari database!');
+    });
 
-            // HANYA zoom ke lokasi saat PERTAMA KALI ditemukan
-            if (!firstLocationFound) {
-                map.setView(e.latlng, 16);
-                firstLocationFound = true;
+
+
+    // ============================================================
+    // LOGIKA MODAL QUERY SQL
+    // ============================================================
+    var modalQ = document.getElementById("modalQuery");
+    var btnQ = document.getElementById("btnQuery");
+    var spanQ = document.getElementsByClassName("closeQuery")[0];
+
+    btnQ.onclick = function() { modalQ.style.display = "block"; }
+    spanQ.onclick = function() { modalQ.style.display = "none"; }
+
+    window.onclick = function(event) {
+        if (event.target == modalQ) modalQ.style.display = "none";
+    }
+
+    function setSql(sql) { document.getElementById('sqlEditor').value = sql; }
+
+    document.getElementById('runQuery').onclick = function() {
+        var sqlText = document.getElementById('sqlEditor').value;
+        var head = document.getElementById('headQuery');
+        var body = document.getElementById('bodyQuery');
+        
+        body.innerHTML = '<tr><td style="text-align:center;">Running...</td></tr>';
+        head.innerHTML = '';
+        queryResultLayer.clearLayers(); 
+
+        fetch('/api/query', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ sql: sqlText })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.error) throw new Error(data.error);
+            
+            // Render Header
+            var hRow = "<tr>";
+            data.columns.forEach(col => { hRow += `<th>${col}</th>`; });
+            head.innerHTML = hRow + "</tr>";
+
+            // Cari tahu mana kolom geometri (case insensitive)
+            var geomCol = data.columns.find(c => c.toLowerCase() === 'geometry');
+
+            // Render Rows
+            body.innerHTML = "";
+            // Render Rows
+            body.innerHTML = "";
+            data.rows.forEach(row => {
+                var tr = document.createElement("tr");
+                
+                data.columns.forEach(col => { 
+                    var td = document.createElement("td");
+                    var val = row[col];
+
+                    // Deteksi jika ini adalah kolom geometri (case insensitive)
+                    if (col.toLowerCase() === 'geometry' && val) {
+                        // 1. Buat tombol ikon peta
+                        var btn = document.createElement("button");
+                        btn.className = "btn-view-geom";
+                        btn.innerHTML = "🗺️";
+                        btn.style.cursor = "pointer";
+                        btn.onclick = function() {
+                            try {
+                                var geo = JSON.parse(val);
+                                // Buat layer highlight dengan gaya mencolok
+                                var highlight = L.geoJSON(geo, {
+                                    style: { color: '#ff0000', weight: 10, opacity: 1 },
+                                    pointToLayer: function(f, latlng) {
+                                        return L.circleMarker(latlng, { radius: 15, color: '#ff0000', fillColor: '#ff0000', fillOpacity: 1 });
+                                    }
+                                }).addTo(map);
+
+                                map.fitBounds(highlight.getBounds());
+                                modalQ.style.display = "none";
+
+                                // LOGIKA BERKEDIP (Flash 3 kali)
+                                var count = 0;
+                                var interval = setInterval(() => {
+                                    if (map.hasLayer(highlight)) {
+                                        map.removeLayer(highlight);
+                                    } else {
+                                        highlight.addTo(map);
+                                    }
+                                    count++;
+                                    if (count >= 6) { // 3 kali nyala, 3 kali mati
+                                        clearInterval(interval);
+                                        map.removeLayer(highlight); // Pastikan akhirnya hilang
+                                    }
+                                }, 300); // Kedipan setiap 0.3 detik
+
+                            } catch(e) { alert("Geometri tidak valid: " + e.message); }
+                        };
+                        td.appendChild(btn);
+
+                        // 2. Tambahkan teks ringkas
+                        var txt = document.createElement("span");
+                        txt.innerHTML = (val.length > 15) ? val.substring(0, 15) + "..." : val;
+                        txt.style.color = "#888";
+                        txt.style.fontSize = "10px";
+                        td.appendChild(txt);
+                    } else {
+                        // Kolom biasa
+                        td.innerText = (val !== null && val !== undefined) ? val : "-";
+                    }
+                    tr.appendChild(td);
+                });
+                body.appendChild(tr);
+
+                // Gambar ke peta untuk visualisasi massal
+                if (geomCol && row[geomCol]) {
+                    try {
+                        var geo = JSON.parse(row[geomCol]);
+                        L.geoJSON(geo, {
+                            style: { color: '#f1c40f', weight: 4, opacity: 0.8, fillColor: '#f1c40f', fillOpacity: 0.4 },
+                            onEachFeature: function(f, l) {
+                                l.bindPopup("<b>Hasil SQL</b><br>" + JSON.stringify(f.properties));
+                            }
+                        }).addTo(queryResultLayer);
+                    } catch (e) { }
+                }
+            });
+
+            // Zoom ke hasil jika ada fitur
+            if (queryResultLayer.getLayers().length > 0) {
+                map.fitBounds(queryResultLayer.getBounds());
+                modalQ.style.display = "none"; 
+                alert("📍 " + queryResultLayer.getLayers().length + " Fitur spasial ditemukan dan ditampilkan di peta (Warna Kuning)");
+            } else if (geomCol) {
+                alert("⚠️ Query berhasil, tapi tidak ada geometri valid yang bisa digambar.");
             }
+        })
+        .catch(err => {
+            body.innerHTML = `<tr><td style="color:red;">Error: ${err.message}</td></tr>`;
+        });
+    }
+
+    // LOGIKA RESET QUERY
+    document.getElementById('resetQuery').onclick = function() {
+        document.getElementById('sqlEditor').value = "";
+        document.getElementById('headQuery').innerHTML = "";
+        document.getElementById('bodyQuery').innerHTML = "";
+        queryResultLayer.clearLayers();
+        alert("🧹 SQL Console telah dibersihkan!");
+    }
+    // ============================================================
+    // FITUR GPS REAL-TIME
+    // ============================================================
+    var userLocationMarker = null;
+    var userAccuracyCircle = null;
+    var isTracking = false;
+    var firstLocationFound = false; // Tambahkan flag ini
+
+    var btnGPS = document.getElementById('btnGPS');
+
+    function onLocationFound(e) {
+        var radius = e.accuracy / 2;
+
+        if (userLocationMarker) {
+            userLocationMarker.setLatLng(e.latlng);
+            userAccuracyCircle.setLatLng(e.latlng);
+            userAccuracyCircle.setRadius(radius);
+        } else {
+            // Icon titik biru berdenyut
+            var gpsIcon = L.divIcon({
+                className: 'gps-location-dot',
+                iconSize: [12, 12],
+                html: '<div class="gps-pulse"></div>'
+            });
+            userLocationMarker = L.marker(e.latlng, { icon: gpsIcon }).addTo(map);
+            userAccuracyCircle = L.circle(e.latlng, radius, {
+                color: '#3498db', weight: 1, opacity: 0.3, fillColor: '#3498db', fillOpacity: 0.1
+            }).addTo(map);
         }
 
-        function onLocationError(e) {
-            alert("Gagal mendapatkan lokasi: " + e.message + "\n\nPastikan GPS HP aktif dan Anda mengizinkan akses lokasi di browser.");
+        // HANYA zoom ke lokasi saat PERTAMA KALI ditemukan
+        if (!firstLocationFound) {
+            map.setView(e.latlng, 16);
+            firstLocationFound = true;
+        }
+    }
+
+    function onLocationError(e) {
+        alert("Gagal mendapatkan lokasi: " + e.message + "\n\nPastikan GPS HP aktif dan Anda mengizinkan akses lokasi di browser.");
+        stopTracking();
+    }
+
+    function stopTracking() {
+        isTracking = false;
+        firstLocationFound = false; // Reset flag saat dimatikan
+        map.stopLocate();
+        btnGPS.style.background = "#e67e22";
+        btnGPS.innerText = "📍 Lokasi Saya: OFF";
+        if (userLocationMarker) {
+            map.removeLayer(userLocationMarker);
+            map.removeLayer(userAccuracyCircle);
+            userLocationMarker = null;
+            userAccuracyCircle = null;
+        }
+    }
+
+    btnGPS.onclick = function() {
+        if (!isTracking) {
+            isTracking = true;
+            firstLocationFound = false; // Pastikan reset saat mulai
+            btnGPS.style.background = "#2ecc71";
+            btnGPS.innerText = "📍 Lokasi Saya: ON";
+            // Matikan setView:true di sini agar tidak memaksa zoom setiap detik
+            map.locate({ watch: true, enableHighAccuracy: true });
+        } else {
             stopTracking();
         }
+    };
 
-        function stopTracking() {
-            isTracking = false;
-            firstLocationFound = false; // Reset flag saat dimatikan
-            map.stopLocate();
-            btnGPS.style.background = "#e67e22";
-            btnGPS.innerText = "📍 Lokasi Saya: OFF";
-            if (userLocationMarker) {
-                map.removeLayer(userLocationMarker);
-                map.removeLayer(userAccuracyCircle);
-                userLocationMarker = null;
-                userAccuracyCircle = null;
-            }
-        }
-
-        btnGPS.onclick = function () {
-            if (!isTracking) {
-                isTracking = true;
-                firstLocationFound = false; // Pastikan reset saat mulai
-                btnGPS.style.background = "#2ecc71";
-                btnGPS.innerText = "📍 Lokasi Saya: ON";
-                // Matikan setView:true di sini agar tidak memaksa zoom setiap detik
-                map.locate({ watch: true, enableHighAccuracy: true });
-            } else {
-                stopTracking();
-            }
-        };
-
-        map.on('locationfound', onLocationFound);
-        map.on('locationerror', onLocationError);
-    </script>
+    map.on('locationfound', onLocationFound);
+    map.on('locationerror', onLocationError);
+</script>
 </body>
-
 </html>
